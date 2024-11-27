@@ -1045,6 +1045,11 @@ impl PhysicalDeviceProperties {
         // We could increase the limit when we aren't on a tiled GPU.
         let max_color_attachment_bytes_per_sample = 32;
 
+        let max_sampled_textures_per_shader_stage = match &self.descriptor_indexing {
+            Some(indexing) => indexing.max_descriptor_set_update_after_bind_sampled_images,
+            None => limits.max_descriptor_set_sampled_images,
+        };
+
         wgt::Limits {
             max_texture_dimension_1d: limits.max_image_dimension1_d,
             max_texture_dimension_2d: limits.max_image_dimension2_d,
@@ -1058,7 +1063,7 @@ impl PhysicalDeviceProperties {
                 .max_descriptor_set_uniform_buffers_dynamic,
             max_dynamic_storage_buffers_per_pipeline_layout: limits
                 .max_descriptor_set_storage_buffers_dynamic,
-            max_sampled_textures_per_shader_stage: limits.max_per_stage_descriptor_sampled_images,
+            max_sampled_textures_per_shader_stage,
             max_samplers_per_shader_stage: limits.max_per_stage_descriptor_samplers,
             max_storage_buffers_per_shader_stage: limits.max_per_stage_descriptor_storage_buffers,
             max_storage_textures_per_shader_stage: limits.max_per_stage_descriptor_storage_images,

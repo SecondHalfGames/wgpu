@@ -1511,6 +1511,7 @@ impl crate::Device for super::Device {
 
                     if partially_bound && entry.count.is_some() {
                         flags |= vk::DescriptorBindingFlags::PARTIALLY_BOUND;
+                        flags |= vk::DescriptorBindingFlags::UPDATE_AFTER_BIND;
                     }
 
                     flags
