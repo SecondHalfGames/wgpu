@@ -586,9 +586,9 @@ impl BindingTypeMaxCountValidator {
         if self.has_bindless_array && has_dynamic_offset_array {
             return Err(CreateBindGroupLayoutError::ContainsBothBindingArrayAndDynamicOffsetArray);
         }
-        if self.has_bindless_array && has_uniform_buffer {
-            return Err(CreateBindGroupLayoutError::ContainsBothBindingArrayAndUniformBuffer);
-        }
+        // if self.has_bindless_array && has_uniform_buffer {
+        //     return Err(CreateBindGroupLayoutError::ContainsBothBindingArrayAndUniformBuffer);
+        // }
         Ok(())
     }
 }
