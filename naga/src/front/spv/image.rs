@@ -207,7 +207,17 @@ pub(super) fn patch_comparison_type(
     log::debug!("Flipping comparison for {var:?}");
     let original_ty = &arena[var.ty];
     let original_ty_span = arena.get_span(var.ty);
-    let ty_inner = match original_ty.inner {
+
+    // Unpack BindingArray if present
+    let mut ty_inner = original_ty.inner.clone();
+    let mut binding_array_size = None;
+    if let crate::TypeInner::BindingArray { base, size } = &original_ty.inner {
+        ty_inner = arena[*base].inner.clone();
+        binding_array_size = Some(*size);
+    }
+
+    // Map to new inner type
+    ty_inner = match ty_inner {
         crate::TypeInner::Image {
             class: crate::ImageClass::Sampled { multi, .. },
             dim,
@@ -222,6 +232,21 @@ pub(super) fn patch_comparison_type(
     };
 
     let name = original_ty.name.clone();
+
+    // Repack BindingArray if it was present
+    if let Some(size) = binding_array_size {
+        ty_inner = crate::TypeInner::BindingArray {
+            base: arena.insert(
+                crate::Type {
+                    name: name.clone(),
+                    inner: ty_inner,
+                },
+                original_ty_span,
+            ),
+            size,
+        };
+    }
+
     var.ty = arena.insert(
         crate::Type {
             name,
